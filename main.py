@@ -3,9 +3,12 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{os.environ['DATABASE_USER']}:{os.environ['DATABASE_PASSWORD']}@{os.environ['DATABASE_HOST']}/{os.environ['DATABASE_NAME']}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://user:654321@mysql/database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'default_secret_key')
 
@@ -28,8 +31,8 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
-@jwt.user_loader_callback
-def user_loader_callback(identity):
+@jwt.user_lookup_loader
+def user_lookup_loader(identity):
     return User.query.get(identity)
 
 
@@ -172,5 +175,6 @@ def task_statistics():
 
 
 if __name__ == '__main__':
+
     db.create_all()
     app.run(debug=True)
