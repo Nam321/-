@@ -15,9 +15,7 @@ services:
       - ./mysql_data:/var/lib/mysql
 
   flask-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - "5000:5000"
     depends_on:
